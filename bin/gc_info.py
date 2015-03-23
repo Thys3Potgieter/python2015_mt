@@ -9,5 +9,13 @@ if len(sys.argv) != 2:
   exit("Usage: {} <FASTA file>".format(os.path.basename(sys.argv[0])))
 
 filename = sys.argv[1]
-for seq in Bio.SeqIO.parse(filename, 'fasta'):
-  print "{} {}%".format(seq.id, int(seq_stats.gc_content(str(seq.seq))))
+try:
+  input_file = open(filename)
+except IOError as e:
+  print >>sys.stderr, "Could not open {}: {}\n".format(filename, e.strerror)
+  sys.exit(1)
+else:
+  for record in Bio.SeqIO.parse(input_file, 'fasta'):
+    seq_str = str(record.seq)
+    gc_perc = int(seq_stats.gc_content(seq_str))
+    print "{} {}%".format(record.id, gc_perc)
